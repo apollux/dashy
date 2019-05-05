@@ -1,0 +1,13 @@
+{
+  "name": "dashy",
+  "version": "0.1.0",
+  "main": "main.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "electron": "^5.0.0",
+    "ramda": "^0.26.1"
+  }
+}
