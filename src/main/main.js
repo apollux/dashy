@@ -73,7 +73,8 @@ function createWindow() {
     "https://github.com",
     "https://trello.com",
     "https://tweakers.net",
-    "https://electronjs.org"
+    "https://electronjs.org",
+    "https://reddit.com/r/programming"
   ]);
   carroussel.startCycle();
 
