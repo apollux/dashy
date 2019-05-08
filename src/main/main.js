@@ -18,16 +18,20 @@ class CarrousselBrowserWindow {
   }
 
   createViews() {
-    const { width, height } = this.browserWindow.getBounds();
-    return R.map(url => this.createView(width, height, url), this._urls);
+    return R.map(url => this.createView(url), this._urls);
   }
 
-  createView(width, height, url) {
+  createView(url) {
     const v = new BrowserView();
-    v.setBounds({ x: 0, y: 0, width, height });
+    this.updateBounds(v);
     v.setAutoResize({ width: true, height: true });
     v.webContents.loadURL(url);
     return v;
+  }
+
+  updateBounds(view) {
+    const { width, height } = this.browserWindow.getBounds();
+    view.setBounds({ x: 0, y: 0, width, height });
   }
 
   startCycle() {
@@ -37,7 +41,9 @@ class CarrousselBrowserWindow {
 
     let index = 0;
     const cycle = () => {
-      this.browserWindow.setBrowserView(this._views[index]);
+      const nextView = this._views[index];
+      this.updateBounds(nextView);
+      this.browserWindow.setBrowserView(nextView);
       if (++index >= this._views.length) {
         index = 0;
       }
