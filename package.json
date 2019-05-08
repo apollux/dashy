@@ -4,10 +4,33 @@
   "main": "main.js",
   "license": "MIT",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "lint": "eslint . --cache --fix",
+    "pretest": "npm run lint"
   },
   "dependencies": {
     "electron": "^5.0.0",
     "ramda": "^0.26.1"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "husky": ">=1",
+    "lint-staged": ">=8",
+    "prettier": "^1.17.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,css,json,md}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
