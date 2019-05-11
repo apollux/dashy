@@ -1,5 +1,6 @@
 const R = require("ramda");
 const { app, Menu, BrowserWindow, BrowserView } = require("electron");
+const Store = require("electron-store");
 
 class CarrousselBrowserWindow {
   constructor(urls) {
@@ -69,19 +70,16 @@ class CarrousselBrowserWindow {
   }
 }
 
+const store = new Store();
+console.log(store.path);
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let carroussel;
+let carroussels;
 
-function createWindow() {
+function createWindow(urls) {
   // Create the browser window.
-  carroussel = new CarrousselBrowserWindow([
-    "https://github.com",
-    "https://trello.com",
-    "https://tweakers.net",
-    "https://electronjs.org",
-    "https://reddit.com/r/programming"
-  ]);
+  const carroussel = new CarrousselBrowserWindow(urls);
   carroussel.startCycle();
 
   // Emitted when the window is closed.
@@ -90,12 +88,14 @@ function createWindow() {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
-    carroussel = null;
+    // carroussel = null;
   });
 }
 
 function initialize() {
-  createWindow();
+  const urlGroups = store.get("groups");
+
+  carroussels = R.map(createWindow, urlGroups);
 }
 
 // This method will be called when Electron has finished
@@ -115,7 +115,7 @@ app.on("window-all-closed", () => {
 app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (carroussel.browserWindow === null) {
+  if (R.isEmpty(carroussels)) {
     initialize();
   }
 });
@@ -138,7 +138,7 @@ const template = [
         label: "Toggle carroussel",
         accelerator: "Ctrl+c",
         click() {
-          setTimeout(() => carroussel.toggleCycle(), 0);
+          setTimeout(() => R.forEach(c => c.toggleCycle(), carroussels), 0);
         }
       }
     ]
