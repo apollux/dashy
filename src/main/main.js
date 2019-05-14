@@ -1,75 +1,7 @@
 const R = require("ramda");
-const { app, Menu, BrowserWindow, BrowserView } = require("electron");
+const { app, Menu } = require("electron");
 const Store = require("electron-store");
-
-class CarrouselBrowserWindow {
-  constructor(urls) {
-    this.browserWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
-      webPreferences: {
-        nodeIntegration: true,
-        partition: "persist:dashy"
-      },
-      fullscreen: false
-    });
-    this._urls = urls;
-    this._cycleHandle = null;
-
-    this._views = this.createViews();
-  }
-
-  createViews() {
-    return R.map(url => this.createView(url), this._urls);
-  }
-
-  createView(url) {
-    const v = new BrowserView();
-    this.updateBounds(v);
-    v.setAutoResize({ width: true, height: true });
-    v.webContents.loadURL(url);
-    return v;
-  }
-
-  updateBounds(view) {
-    const { width, height } = this.browserWindow.getBounds();
-    view.setBounds({ x: 0, y: 0, width, height });
-  }
-
-  startCycle() {
-    if (this._cycleHandle) {
-      return;
-    }
-
-    let index = 0;
-    const cycle = () => {
-      const nextView = this._views[index];
-      this.updateBounds(nextView);
-      this.browserWindow.setBrowserView(nextView);
-      if (++index >= this._views.length) {
-        index = 0;
-      }
-    };
-
-    cycle();
-    this._cycleHandle = setInterval(() => {
-      cycle();
-    }, 15000);
-  }
-
-  stopCycle() {
-    if (!this._cycleHandle) {
-      return;
-    }
-
-    clearInterval(this._cycleHandle);
-    this._cycleHandle = null;
-  }
-
-  toggleCycle() {
-    this._cycleHandle ? this.stopCycle() : this.startCycle();
-  }
-}
+const { CarrouselBrowserWindow } = require("./carrousel-browser-window");
 
 const store = new Store();
 console.log(store.path);
