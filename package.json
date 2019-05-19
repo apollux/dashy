@@ -13,18 +13,19 @@
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
-    "ramda": "^0.26.1"
+    "ramda": "^0.26.1",
+    "source-map-support": "^0.5.12"
   },
   "devDependencies": {
-    "electron": "^5.0.0",
-    "electron-builder": "20.38.4",
+    "electron": "^5.0.1",
+    "electron-builder": "20.40.2",
     "electron-store": "^3.2.0",
     "electron-webpack": "^2.6.2",
     "eslint": "^5.16.0",
-    "husky": ">=1",
-    "lint-staged": ">=8",
-    "prettier": "^1.17.0",
-    "webpack": "4.28.4"
+    "husky": ">=2.3.0",
+    "lint-staged": ">=8.1.7",
+    "prettier": "^1.17.1",
+    "webpack": "4.31.0"
   },
   "husky": {
     "hooks": {
@@ -40,5 +41,11 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "build": {
+    "appId": "com.electron.dashy",
+    "win": {
+      "target": "nsis"
+    }
   }
 }
