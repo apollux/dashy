@@ -2,15 +2,15 @@ const { BrowserWindow, BrowserView } = require("electron");
 const R = require("ramda");
 
 class CarrouselBrowserWindow {
-  constructor(urls) {
+  constructor(urls, display) {
     this.browserWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
+      ...display.bounds,
       webPreferences: {
         nodeIntegration: true,
         partition: "persist:dashy"
       },
-      fullscreen: false
+      fullscreen: true,
+      frame: false
     });
     this._urls = urls;
     this._cycleHandle = null;

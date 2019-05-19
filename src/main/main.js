@@ -10,9 +10,9 @@ console.log(store.path);
 // be closed automatically when the JavaScript object is garbage collected.
 let carrousels;
 
-function createWindow(urls) {
+function createWindow({ urls, display }) {
   // Create the browser window.
-  const carrousel = new CarrouselBrowserWindow(urls);
+  const carrousel = new CarrouselBrowserWindow(urls, display);
   carrousel.startCycle();
 
   // Emitted when the window is closed.
@@ -23,12 +23,37 @@ function createWindow(urls) {
     // when you should delete the corresponding element.
     // carrousel = null;
   });
+
+  return carrousel;
 }
 
-function initialize() {
-  const urlGroups = store.get("groups");
+const splitIn = R.curry((n, a) => {
+  const split = R.splitAt(Math.ceil(R.length(a) / n));
+  let remainder = a;
+  const result = [];
+  while (!R.isEmpty(remainder)) {
+    const next = split(remainder);
+    result.push(R.head(next));
+    remainder = R.last(next);
+  }
+  return result;
+});
 
-  carrousels = R.map(createWindow, urlGroups);
+function initialize() {
+  const { screen } = require("electron");
+  const displays = screen.getAllDisplays();
+  const urlGroups = store.get("groups");
+  const urlGroupsPerDisplay = R.map(
+    R.flatten,
+    splitIn(displays.length, urlGroups)
+  );
+  const urlsToDisplay = R.zipWith(
+    (urls, display) => ({ urls, display }),
+    urlGroupsPerDisplay,
+    displays
+  );
+
+  carrousels = R.map(createWindow, urlsToDisplay);
 }
 
 // This method will be called when Electron has finished
