@@ -22,11 +22,16 @@ class CarrouselBrowserWindow {
     return R.map(url => this.createView(url), this._urls);
   }
 
-  createView(url) {
+  createView(urlInfo) {
+    const urlToLoad = R.propOr(urlInfo, "url", urlInfo);
+    const refreshInterval = R.propOr(0, "refreshInterval", urlInfo);
     const v = new BrowserView();
     this.updateBounds(v);
     v.setAutoResize({ width: true, height: true });
-    v.webContents.loadURL(url);
+    v.webContents.loadURL(urlToLoad);
+    if (refreshInterval) {
+      setInterval(() => v.webContents.reload(), refreshInterval);
+    }
     return v;
   }
 
