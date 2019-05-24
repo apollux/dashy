@@ -30,7 +30,12 @@ class CarrouselBrowserWindow {
     v.setAutoResize({ width: true, height: true });
     v.webContents.loadURL(urlToLoad);
     if (refreshInterval) {
-      setInterval(() => v.webContents.reload(), refreshInterval);
+      // loadURL is used here to refresh the page instead of calling
+      // reload directly. This is done to ensure the configured url is
+      // refreshed. This is convenient when the configured url resulted
+      // in a redirect when data is momentarily not available.
+      // The behavior might need to be configurable at some point.
+      setInterval(() => v.webContents.loadURL(urlToLoad), refreshInterval);
     }
     return v;
   }
