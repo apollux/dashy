@@ -40,7 +40,9 @@ function initialize() {
   const { screen } = require("electron");
   const displays = screen.getAllDisplays();
   const store = new Store();
-  const urlGroups = store.get("urls");
+  const urlGroups = store.get("urls", [
+    "https://github.com/apollux/dashy/blob/master/Readme.md"
+  ]);
   const urlGroupsPerDisplay = R.map(
     R.flatten,
     splitIn(displays.length, urlGroups)
