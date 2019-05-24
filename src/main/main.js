@@ -3,9 +3,6 @@ const { app, Menu } = require("electron");
 const Store = require("electron-store");
 const { CarrouselBrowserWindow } = require("./carrousel-browser-window");
 
-const store = new Store();
-console.log(store.path);
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let carrousels;
@@ -42,7 +39,10 @@ const splitIn = R.curry((n, a) => {
 function initialize() {
   const { screen } = require("electron");
   const displays = screen.getAllDisplays();
-  const urlGroups = store.get("groups");
+  const store = new Store();
+  const urlGroups = store.get("urls", [
+    "https://github.com/apollux/dashy/blob/master/Readme.md"
+  ]);
   const urlGroupsPerDisplay = R.map(
     R.flatten,
     splitIn(displays.length, urlGroups)
