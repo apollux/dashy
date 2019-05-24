@@ -13,7 +13,7 @@
 
 Installers can be downloaded here: https://github.com/apollux/dashy/releases
 Alternatively you can build your own by cloning the repo and running:
-`yarn && yarn run dist
+`yarn && yarn run dist`
 
 ## Configuration
 
