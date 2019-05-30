@@ -35,7 +35,10 @@ class CarrouselBrowserWindow {
       // refreshed. This is convenient when the configured url resulted
       // in a redirect when data is momentarily not available.
       // The behavior might need to be configurable at some point.
-      setInterval(() => v.webContents.loadURL(urlToLoad), refreshInterval);
+      this._refreshHandle = setInterval(
+        () => v.webContents.loadURL(urlToLoad),
+        refreshInterval
+      );
     }
     return v;
   }
@@ -77,6 +80,13 @@ class CarrouselBrowserWindow {
 
   toggleCycle() {
     this._cycleHandle ? this.stopCycle() : this.startCycle();
+  }
+
+  destroy() {
+    this.stopCycle();
+    clearInterval(this._refreshHandle);
+    R.forEach(view => view.destroy(), this._views);
+    this.browserWindow.destroy();
   }
 }
 

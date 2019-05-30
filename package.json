@@ -13,6 +13,7 @@
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
+    "chokidar": "^3.0.0",
     "ramda": "^0.26.1",
     "source-map-support": "^0.5.12"
   },

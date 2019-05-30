@@ -1,26 +1,24 @@
 const R = require("ramda");
 const { app, Menu } = require("electron");
 const Store = require("electron-store");
+const chokidar = require("chokidar");
 const { CarrouselBrowserWindow } = require("./carrousel-browser-window");
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
+const store = new Store();
 let carrousels;
+let reInitializing = false;
 
 function createWindow({ urls, display }) {
-  // Create the browser window.
   const carrousel = new CarrouselBrowserWindow(urls, display);
   carrousel.startCycle();
+  return carrousel;
+}
 
-  // Emitted when the window is closed.
+function registerCarrousel(carrousel, index) {
   carrousel.browserWindow.on("closed", () => {
-    carrousel.stopCycle();
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    // carrousel = null;
+    carrousel.destroy();
+    carrousels[index] = null;
   });
-
   return carrousel;
 }
 
@@ -39,7 +37,6 @@ const splitIn = R.curry((n, a) => {
 function initialize() {
   const { screen } = require("electron");
   const displays = screen.getAllDisplays();
-  const store = new Store();
   const urlGroups = store.get("urls", [
     "https://github.com/apollux/dashy/blob/master/Readme.md"
   ]);
@@ -53,19 +50,31 @@ function initialize() {
     displays
   );
 
-  carrousels = R.map(createWindow, urlsToDisplay);
+  carrousels = R.addIndex(R.map)(
+    R.useWith(registerCarrousel, [createWindow]),
+    urlsToDisplay
+  );
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on("ready", initialize);
+function reInitialize() {
+  reInitializing = true;
+  R.forEach(carrousel => carrousel.destroy(), carrousels);
+  initialize();
+  reInitializing = false;
+}
+
+app.on("ready", () => {
+  initialize();
+  const watcher = chokidar.watch(store.path, { ignoreInitial: true });
+  watcher
+    .on("add", reInitialize)
+    .on("change", reInitialize)
+    .on("unlink", reInitialize);
+});
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin") {
+  if (!reInitializing) {
     app.quit();
   }
 });
