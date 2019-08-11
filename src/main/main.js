@@ -34,16 +34,18 @@ const splitIn = R.curry((n, a) => {
   return result;
 });
 
+const splitUrlGroupsIn = R.curry((number, urlGroups) =>
+  R.map(R.flatten, splitIn(number, urlGroups))
+);
+
 function initialize() {
   const { screen } = require("electron");
   const displays = screen.getAllDisplays();
   const urlGroups = store.get("urls", [
     "https://github.com/apollux/dashy/blob/master/Readme.md"
   ]);
-  const urlGroupsPerDisplay = R.map(
-    R.flatten,
-    splitIn(displays.length, urlGroups)
-  );
+  const urlGroupsPerDisplay = splitUrlGroupsIn(displays.length, urlGroups);
+
   const urlsToDisplay = R.zipWith(
     (urls, display) => ({ urls, display }),
     urlGroupsPerDisplay,

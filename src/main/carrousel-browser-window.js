@@ -1,5 +1,7 @@
-const { BrowserWindow, BrowserView } = require("electron");
+const { BrowserWindow } = require("electron");
+const { CarrouselView, ViewStatus } = require("./carrousel-view");
 const R = require("ramda");
+const { getRendererAppUrl } = require("./get-renderer-app-url");
 
 class CarrouselBrowserWindow {
   constructor(urls, display) {
@@ -16,36 +18,41 @@ class CarrouselBrowserWindow {
     this._cycleHandle = null;
 
     this._views = this.createViews();
+    this._statusView = new CarrouselView({
+      browserViewOptions: {
+        webPreferences: {
+          nodeIntegration: true
+        }
+      }
+    });
+    this._showStatusView("loading-error");
+  }
+
+  _setCarrouselView(view) {
+    view.browserView.setBounds(this.browserWindow.getBounds());
+    this.browserWindow.setBrowserView(view.browserView);
+  }
+
+  _showStatusView(endpoint) {
+    this._statusView.browserView.webContents.loadURL(
+      getRendererAppUrl(endpoint)
+    );
+    this._setCarrouselView(this._statusView);
   }
 
   createViews() {
-    return R.map(url => this.createView(url), this._urls);
+    return R.map(urlInfo => this.createView(urlInfo), this._urls);
   }
 
   createView(urlInfo) {
     const urlToLoad = R.propOr(urlInfo, "url", urlInfo);
     const refreshInterval = R.propOr(0, "refreshInterval", urlInfo);
-    const v = new BrowserView();
-    this.updateBounds(v);
-    v.setAutoResize({ width: true, height: true });
-    v.webContents.loadURL(urlToLoad);
-    if (refreshInterval) {
-      // loadURL is used here to refresh the page instead of calling
-      // reload directly. This is done to ensure the configured url is
-      // refreshed. This is convenient when the configured url resulted
-      // in a redirect when data is momentarily not available.
-      // The behavior might need to be configurable at some point.
-      this._refreshHandle = setInterval(
-        () => v.webContents.loadURL(urlToLoad),
-        refreshInterval
-      );
-    }
+    const v = new CarrouselView({
+      url: urlToLoad,
+      refreshInterval,
+      ...this.browserWindow.getBounds()
+    });
     return v;
-  }
-
-  updateBounds(view) {
-    const { width, height } = this.browserWindow.getBounds();
-    view.setBounds({ x: 0, y: 0, width, height });
   }
 
   startCycle() {
@@ -56,8 +63,20 @@ class CarrouselBrowserWindow {
     let index = 0;
     const cycle = () => {
       const nextView = this._views[index];
-      this.updateBounds(nextView);
-      this.browserWindow.setBrowserView(nextView);
+      console.log(
+        "Changing view",
+        nextView.browserView.webContents.getURL(),
+        nextView.status
+      );
+
+      if (nextView.status === ViewStatus.failed) {
+        this._showStatusView("loading-error");
+      } else if (nextView.status === ViewStatus.loading) {
+        this._showStatusView("loading");
+      } else {
+        this._setCarrouselView(nextView);
+      }
+
       if (++index >= this._views.length) {
         index = 0;
       }
@@ -84,7 +103,6 @@ class CarrouselBrowserWindow {
 
   destroy() {
     this.stopCycle();
-    clearInterval(this._refreshHandle);
     R.forEach(view => view.destroy(), this._views);
     this.browserWindow.destroy();
   }
