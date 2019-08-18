@@ -27,7 +27,6 @@ class CarrouselBrowserWindow {
       }
     });
     this._showStatusView("loading-error");
-    this._statusView.browserView.webContents.openDevTools();
   }
 
   get isCycling() {
@@ -104,6 +103,19 @@ class CarrouselBrowserWindow {
     if (++this._index >= this._views.length) {
       this._index = 0;
     }
+  }
+
+  openDevTools() {
+    R.forEach(view => view.browserView.webContents.openDevTools(), this._views);
+    this._statusView.browserView.webContents.openDevTools();
+  }
+
+  closeDevTools() {
+    R.forEach(
+      view => view.browserView.webContents.closeDevTools(),
+      this._views
+    );
+    this._statusView.browserView.webContents.closeDevTools();
   }
 
   destroy() {

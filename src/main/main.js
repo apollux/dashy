@@ -127,11 +127,24 @@ const template = [
     label: "View",
     submenu: [
       {
-        label: "Toggle carroussel",
+        label: "Open Controls Window",
         accelerator: "F12",
         click() {
           if (!controlWindow || controlWindow.isDestroyed()) {
             createControlsWindow();
+          }
+        }
+      },
+      {
+        label: "Toggle Dev Tools",
+        accelerator: "Ctrl+F12",
+        click() {
+          if (controlWindow.webContents.isDevToolsOpened()) {
+            controlWindow.webContents.closeDevTools();
+            R.forEach(carrousel => carrousel.closeDevTools(), carrousels);
+          } else {
+            controlWindow.webContents.openDevTools();
+            R.forEach(carrousel => carrousel.openDevTools(), carrousels);
           }
         }
       }
