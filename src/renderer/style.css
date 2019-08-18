@@ -1,0 +1,102 @@
+body {
+  margin: 0;
+  height: 100vh;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: inherit;
+}
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 27px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #0b3954;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 6px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 6px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 26px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 45px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(19px, 0);
+  }
+}
+
+.controls {
+  display: flex;
+  font-size: 3rem;
+}
+
+.controls > div {
+  position: relative;
+  margin-left: 1rem;
+}
+
+.controls [class^="icon-"],
+.controls [class*=" icon-"] {
+  cursor: pointer;
+  box-shadow: 0.3rem 0.3rem 0.3rem 0px rgba(0, 0, 0, 0.75);
+  border-top: 0.1rem solid transparent;
+  border-left: 0.1rem solid transparent;
+}
+
+.controls [class^="icon-"]:hover,
+.controls [class*=" icon-"]:hover {
+  cursor: pointer;
+  border-top: 0.1rem solid black;
+  border-left: 0.1rem solid black;
+}
+
+.controls [class^="icon-"]:active,
+.controls [class*=" icon-"]:active {
+  cursor: pointer;
+  box-shadow: 0.05rem 0.05rem 0.05rem 0px rgba(0, 0, 0, 0.75);
+  border-top: 0.05rem solid black;
+  border-left: 0.05rem solid black;
+  top: 0.2rem;
+}

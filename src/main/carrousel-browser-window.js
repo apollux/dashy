@@ -16,8 +16,9 @@ class CarrouselBrowserWindow {
     });
     this._urls = urls;
     this._cycleHandle = null;
+    this._index = 0;
 
-    this._views = this.createViews();
+    this._views = this._createViews();
     this._statusView = new CarrouselView({
       browserViewOptions: {
         webPreferences: {
@@ -26,6 +27,11 @@ class CarrouselBrowserWindow {
       }
     });
     this._showStatusView("loading-error");
+    this._statusView.browserView.webContents.openDevTools();
+  }
+
+  get isCycling() {
+    return !!this._cycleHandle;
   }
 
   _setCarrouselView(view) {
@@ -40,11 +46,11 @@ class CarrouselBrowserWindow {
     this._setCarrouselView(this._statusView);
   }
 
-  createViews() {
-    return R.map(urlInfo => this.createView(urlInfo), this._urls);
+  _createViews() {
+    return R.map(urlInfo => this._createView(urlInfo), this._urls);
   }
 
-  createView(urlInfo) {
+  _createView(urlInfo) {
     const urlToLoad = R.propOr(urlInfo, "url", urlInfo);
     const refreshInterval = R.propOr(0, "refreshInterval", urlInfo);
     const v = new CarrouselView({
@@ -60,31 +66,9 @@ class CarrouselBrowserWindow {
       return;
     }
 
-    let index = 0;
-    const cycle = () => {
-      const nextView = this._views[index];
-      console.log(
-        "Changing view",
-        nextView.browserView.webContents.getURL(),
-        nextView.status
-      );
-
-      if (nextView.status === ViewStatus.failed) {
-        this._showStatusView("loading-error");
-      } else if (nextView.status === ViewStatus.loading) {
-        this._showStatusView("loading");
-      } else {
-        this._setCarrouselView(nextView);
-      }
-
-      if (++index >= this._views.length) {
-        index = 0;
-      }
-    };
-
-    cycle();
+    this.next();
     this._cycleHandle = setInterval(() => {
-      cycle();
+      this.next();
     }, 15000);
   }
 
@@ -99,6 +83,27 @@ class CarrouselBrowserWindow {
 
   toggleCycle() {
     this._cycleHandle ? this.stopCycle() : this.startCycle();
+  }
+
+  next() {
+    const nextView = this._views[this._index];
+    console.log(
+      "Changing view",
+      nextView.browserView.webContents.getURL(),
+      nextView.status
+    );
+
+    if (nextView.status === ViewStatus.failed) {
+      this._showStatusView("loading-error");
+    } else if (nextView.status === ViewStatus.loading) {
+      this._showStatusView("loading");
+    } else {
+      this._setCarrouselView(nextView);
+    }
+
+    if (++this._index >= this._views.length) {
+      this._index = 0;
+    }
   }
 
   destroy() {

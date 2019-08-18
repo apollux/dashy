@@ -1,12 +1,14 @@
 const R = require("ramda");
-const { app, Menu } = require("electron");
+const { app, Menu, BrowserWindow } = require("electron");
 const Store = require("electron-store");
 const chokidar = require("chokidar");
 const { CarrouselBrowserWindow } = require("./carrousel-browser-window");
+const { getRendererAppUrl } = require("./get-renderer-app-url");
 
 const store = new Store();
 let carrousels;
 let reInitializing = false;
+let controlWindow;
 
 function createWindow({ urls, display }) {
   const carrousel = new CarrouselBrowserWindow(urls, display);
@@ -65,8 +67,35 @@ function reInitialize() {
   reInitializing = false;
 }
 
+function createControlsWindow() {
+  controlWindow = new BrowserWindow({
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+
+  const { screen } = require("electron");
+  const primaryBounds = screen.getPrimaryDisplay().bounds;
+  controlWindow.setMenuBarVisibility(false);
+  controlWindow.setBounds({
+    ...primaryBounds,
+    height: primaryBounds.height / 5,
+    width: (primaryBounds.width / 5) * 4
+  });
+  controlWindow.loadURL(getRendererAppUrl("controls"));
+}
+
 app.on("ready", () => {
   initialize();
+  global.controls = {
+    pause: () => R.forEach(carrousel => carrousel.stopCycle(), carrousels),
+    play: () => R.forEach(carrousel => carrousel.startCycle(), carrousels),
+    forward: () => R.forEach(carrousel => carrousel.next(), carrousels)
+  };
+
+  createControlsWindow();
+
   const watcher = chokidar.watch(store.path, { ignoreInitial: true });
   watcher
     .on("add", reInitialize)
@@ -90,24 +119,20 @@ app.on("activate", () => {
 });
 
 const template = [
-  // { role: 'fileMenu' }
   {
     label: "File",
     submenu: [{ role: "quit" }]
   },
-  // { role: 'viewMenu' }
   {
     label: "View",
     submenu: [
-      { role: "reload" },
-      { role: "forcereload" },
-      { role: "toggledevtools" },
-      { role: "togglefullscreen" },
       {
         label: "Toggle carroussel",
-        accelerator: "Ctrl+c",
+        accelerator: "F12",
         click() {
-          setTimeout(() => R.forEach(c => c.toggleCycle(), carrousels), 0);
+          if (!controlWindow || controlWindow.isDestroyed()) {
+            createControlsWindow();
+          }
         }
       }
     ]
