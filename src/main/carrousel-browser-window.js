@@ -92,16 +92,27 @@ class CarrouselBrowserWindow {
       nextView.status
     );
 
-    if (nextView.status === ViewStatus.failed) {
-      this._showStatusView("loading-error");
-    } else if (nextView.status === ViewStatus.loading) {
-      this._showStatusView("loading");
-    } else {
-      this._setCarrouselView(nextView);
-    }
+    R.forEach(v => v.removeAllListeners(), this._views);
+
+    // The displayed view might need updating,
+    // the loading page could be displayed.
+    nextView.on("loading", () => this._updateView(nextView));
+    nextView.on("loaded", () => this._updateView(nextView));
+    nextView.on("failed", () => this._updateView(nextView));
+    this._updateView(nextView);
 
     if (++this._index >= this._views.length) {
       this._index = 0;
+    }
+  }
+
+  _updateView(view) {
+    if (view.status === ViewStatus.failed) {
+      this._showStatusView("loading-error");
+    } else if (view.status === ViewStatus.loading) {
+      this._showStatusView("loading");
+    } else {
+      this._setCarrouselView(view);
     }
   }
 

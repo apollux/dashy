@@ -1,4 +1,5 @@
 const { BrowserView } = require("electron");
+const EventEmitter = require("events");
 
 const ViewStatus = Object.freeze({
   loading: "loading",
@@ -6,8 +7,9 @@ const ViewStatus = Object.freeze({
   finished: "finished"
 });
 
-class CarrouselView {
+class CarrouselView extends EventEmitter {
   constructor({ url, refreshInterval, browserViewOptions }) {
+    super();
     this._url = url;
     this._status = ViewStatus.loading;
     this._retryHandle = null;
@@ -29,7 +31,7 @@ class CarrouselView {
       // refreshed. This is convenient when the configured url resulted
       // in a redirect when data is momentarily not available.
       // The behavior might need to be configurable at some point.
-      this._refreshHandle = setInterval(() => {
+      this._reloadedfreshHandle = setInterval(() => {
         if (this.status === ViewStatus.finished) this.load();
       }, refreshInterval);
     }
@@ -44,6 +46,7 @@ class CarrouselView {
   }
 
   load() {
+    this.emit("loading");
     this._status = ViewStatus.loading;
 
     if (this._url) {
@@ -57,6 +60,7 @@ class CarrouselView {
 
       this._status = ViewStatus.failed;
       this._retryHandle = setTimeout(() => this.load(), 30000);
+      this.emit("failed");
     }
   }
 
@@ -64,6 +68,7 @@ class CarrouselView {
     if (this._status === ViewStatus.loading) {
       console.log("load finished", this._view.webContents.getURL());
       this._status = ViewStatus.finished;
+      this.emit("loaded");
     }
   }
 
