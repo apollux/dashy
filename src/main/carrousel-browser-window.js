@@ -9,7 +9,7 @@ class CarrouselBrowserWindow {
       ...display.bounds,
       webPreferences: {
         nodeIntegration: true,
-        partition: "persist:dashy"
+        partition: "persist:dashy" // persist storage, so dasboards remain logged in.
       },
       fullscreen: true,
       frame: false
