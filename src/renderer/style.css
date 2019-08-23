@@ -1,3 +1,7 @@
+:root {
+  --bg-border: rgba(0, 0, 0, 0.33);
+}
+
 body {
   margin: 0;
   height: 100vh;
@@ -83,20 +87,22 @@ body {
   box-shadow: 0.3rem 0.3rem 0.3rem 0px rgba(0, 0, 0, 0.75);
   border-top: 0.1rem solid transparent;
   border-left: 0.1rem solid transparent;
+  border-top-left-radius: 10%;
+  border-bottom-right-radius: 10%;
 }
 
 .controls [class^="icon-"]:hover,
 .controls [class*=" icon-"]:hover {
   cursor: pointer;
-  border-top: 0.1rem solid black;
-  border-left: 0.1rem solid black;
+  border-top: 0.1rem solid var(--bg-border);
+  border-left: 0.1rem solid rgba(0, 0, 0, 0.33);
 }
 
 .controls [class^="icon-"]:active,
 .controls [class*=" icon-"]:active {
   cursor: pointer;
   box-shadow: 0.05rem 0.05rem 0.05rem 0px rgba(0, 0, 0, 0.75);
-  border-top: 0.05rem solid black;
-  border-left: 0.05rem solid black;
+  border-top: 0.05rem solid rgba(0, 0, 0, 0.33);
+  border-left: 0.05rem solid rgba(0, 0, 0, 0.33);
   top: 0.2rem;
 }
