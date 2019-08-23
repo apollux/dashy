@@ -68,21 +68,26 @@ function reInitialize() {
 }
 
 function createControlsWindow() {
+  const { screen } = require("electron");
+  const primaryBounds = screen.getPrimaryDisplay().bounds;
+  const height = primaryBounds.height / 5;
+  const width = (primaryBounds.width / 5) * 4;
+  const x = primaryBounds.x + (primaryBounds.width / 2 - width / 2);
+  const y =
+    primaryBounds.y + (primaryBounds.height - height - 50) /* bottom margin */;
+
   controlWindow = new BrowserWindow({
+    height,
+    width,
+    x,
+    y,
     alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true
     }
   });
 
-  const { screen } = require("electron");
-  const primaryBounds = screen.getPrimaryDisplay().bounds;
   controlWindow.setMenuBarVisibility(false);
-  controlWindow.setBounds({
-    ...primaryBounds,
-    height: primaryBounds.height / 5,
-    width: (primaryBounds.width / 5) * 4
-  });
   controlWindow.loadURL(getRendererAppUrl("controls"));
 }
 
