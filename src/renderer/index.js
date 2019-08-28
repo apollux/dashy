@@ -23,38 +23,17 @@ function determineController(controller) {
 }
 
 function loadingError(parent) {
-  parent.innerHTML = `
-    <div class="wrapper">
-      <h1>Page failed to load</h1>
-      <p>This could be a temporary issue. The page will reload automatically.</p>
-      <div class="throbber">
-        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-      </div>
-    </div>`;
+  parent.innerHTML = require("./loading-error.html");
 }
 
 function loading(parent) {
-  parent.innerHTML = `
-    <div class="wrapper">
-      <div class="throbber">
-        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
-      </div>
-    </div>
-  `;
+  parent.innerHTML = require("./loading.html");
 }
 
 function controls(parent) {
   const controlsRemote = require("electron").remote.getGlobal("controls");
 
-  parent.innerHTML = `
-    <div class="wrapper">
-      <div class="controls">
-        <div class="play icon-play"></div>
-        <div class="pause icon-pause"></div>
-        <div class="step-forward icon-fast-fw"></div>
-      </div>
-    </div>
-  `;
+  parent.innerHTML = require("./controls.html").default;
 
   const play = parent.getElementsByClassName("play")[0];
   play.onclick = () => controlsRemote.play();
