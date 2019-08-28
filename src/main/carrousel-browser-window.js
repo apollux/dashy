@@ -34,7 +34,9 @@ class CarrouselBrowserWindow {
   }
 
   _setCarrouselView(view) {
-    view.browserView.setBounds(this.browserWindow.getBounds());
+    const { width, height } = this.browserWindow.getBounds();
+    // A BrowserView is positioned relative to BrowserWindow
+    view.browserView.setBounds({ x: 0, y: 0, width, height });
     this.browserWindow.setBrowserView(view.browserView);
   }
 
