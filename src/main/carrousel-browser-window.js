@@ -56,8 +56,7 @@ class CarrouselBrowserWindow {
     const refreshInterval = R.propOr(0, "refreshInterval", urlInfo);
     const v = new CarrouselView({
       url: urlToLoad,
-      refreshInterval,
-      ...this.browserWindow.getBounds()
+      refreshInterval
     });
     return v;
   }
