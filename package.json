@@ -18,15 +18,15 @@
     "source-map-support": "^0.5.12"
   },
   "devDependencies": {
-    "electron": "^5.0.5",
-    "electron-builder": "20.44.4",
-    "electron-store": "^3.3.0",
+    "electron": "^6.0.5",
+    "electron-builder": "21.2.0",
+    "electron-store": "^4.0.0",
     "electron-webpack": "^2.7.2",
-    "eslint": "^6.0.0",
+    "eslint": "^6.2.2",
     "husky": ">=2.4.1",
-    "lint-staged": ">=8.2.1",
+    "lint-staged": ">=9.2.5",
     "prettier": "^1.18.2",
-    "webpack": "4.35.0"
+    "webpack": "4.39.3"
   },
   "husky": {
     "hooks": {
