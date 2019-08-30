@@ -26,7 +26,7 @@ class CarrouselBrowserWindow {
         }
       }
     });
-    this._showStatusView("loading-error");
+    this._showStatusView("loading");
   }
 
   get isCycling() {

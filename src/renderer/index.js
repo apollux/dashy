@@ -23,11 +23,13 @@ function determineController(controller) {
 }
 
 function loadingError(parent) {
-  parent.innerHTML = require("./loading-error.html");
+  const template = require("./loading-error.html");
+  parent.innerHTML = template.default;
 }
 
 function loading(parent) {
-  parent.innerHTML = require("./loading.html");
+  const template = require("./loading.html");
+  parent.innerHTML = template.default;
 }
 
 function controls(parent) {
