@@ -9,10 +9,10 @@ const store = new Store();
 let carrousels;
 let reInitializing = false;
 let controlWindow;
+let state = null;
 
 function createWindow({ urls, display }) {
   const carrousel = new CarrouselBrowserWindow(urls, display);
-  carrousel.startCycle();
   return carrousel;
 }
 
@@ -74,7 +74,7 @@ function createControlsWindow() {
   const width = (primaryBounds.width / 5) * 4;
   const x = primaryBounds.x + (primaryBounds.width / 2 - width / 2);
   const y =
-    primaryBounds.y + (primaryBounds.height - height - 50) /* bottom margin */;
+    primaryBounds.y + (primaryBounds.height - height - 50); /* bottom margin */
 
   controlWindow = new BrowserWindow({
     height,
@@ -89,17 +89,40 @@ function createControlsWindow() {
 
   controlWindow.setMenuBarVisibility(false);
   controlWindow.loadURL(getRendererAppUrl("controls"));
+  controlWindow.webContents.once("did-finish-load", () =>
+    updateControlsWindow()
+  );
+}
+
+function updateControlState(nextState) {
+  state = nextState;
+  updateControlsWindow();
+}
+
+function updateControlsWindow() {
+  controlWindow.webContents.send("main-status", state);
 }
 
 app.on("ready", () => {
   initialize();
   global.controls = {
-    pause: () => R.forEach(carrousel => carrousel.stopCycle(), carrousels),
-    play: () => R.forEach(carrousel => carrousel.startCycle(), carrousels),
+    pause: () => {
+      R.forEach(carrousel => {
+        carrousel.stopCycle();
+      }, carrousels);
+      updateControlState({ state: "stopped" });
+    },
+    play: () => {
+      R.forEach(carrousel => {
+        carrousel.startCycle();
+      }, carrousels);
+      updateControlState({ state: "cycling" });
+    },
     forward: () => R.forEach(carrousel => carrousel.next(), carrousels)
   };
 
   createControlsWindow();
+  global.controls.play();
 
   const watcher = chokidar.watch(store.path, { ignoreInitial: true });
   watcher

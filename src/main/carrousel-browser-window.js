@@ -87,11 +87,7 @@ class CarrouselBrowserWindow {
 
   next() {
     const nextView = this._views[this._index];
-    console.log(
-      "Changing view",
-      nextView.browserView.webContents.getURL(),
-      nextView.status
-    );
+    console.log("Changing view", nextView._url, nextView.status);
 
     R.forEach(v => v.removeAllListeners(), this._views);
 

@@ -73,16 +73,17 @@ body {
 
 .controls {
   display: flex;
+}
+
+.controls > button {
+  border: black;
+  position: relative;
+  margin-left: 1rem;
   font-size: 3rem;
 }
 
-.controls > div {
-  position: relative;
-  margin-left: 1rem;
-}
-
-.controls [class^="icon-"],
-.controls [class*=" icon-"] {
+.controls button {
+  display: block;
   cursor: pointer;
   box-shadow: 0.3rem 0.3rem 0.3rem 0px rgba(0, 0, 0, 0.75);
   border-top: 0.1rem solid transparent;
@@ -91,18 +92,20 @@ body {
   border-bottom-right-radius: 10%;
 }
 
-.controls [class^="icon-"]:hover,
-.controls [class*=" icon-"]:hover {
+.controls button:hover:enabled {
   cursor: pointer;
   border-top: 0.1rem solid var(--bg-border);
   border-left: 0.1rem solid rgba(0, 0, 0, 0.33);
 }
 
-.controls [class^="icon-"]:active,
-.controls [class*=" icon-"]:active {
+.controls button:active:enabled {
   cursor: pointer;
   box-shadow: 0.05rem 0.05rem 0.05rem 0px rgba(0, 0, 0, 0.75);
   border-top: 0.05rem solid rgba(0, 0, 0, 0.33);
   border-left: 0.05rem solid rgba(0, 0, 0, 0.33);
   top: 0.2rem;
+}
+
+.controls button:focus {
+  outline: none;
 }

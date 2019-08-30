@@ -34,6 +34,9 @@ function loading(parent) {
 
 function controls(parent) {
   const controlsRemote = require("electron").remote.getGlobal("controls");
+  require("electron").ipcRenderer.on("main-status", (event, carrouselState) => {
+    update(carrouselState);
+  });
 
   parent.innerHTML = require("./controls.html").default;
 
@@ -43,4 +46,10 @@ function controls(parent) {
   pause.onclick = () => controlsRemote.pause();
   const stepForward = parent.getElementsByClassName("step-forward")[0];
   stepForward.onclick = () => controlsRemote.forward();
+
+  const update = newState => {
+    const cycling = newState.state === "cycling";
+    play.disabled = cycling;
+    pause.disabled = !cycling;
+  };
 }
