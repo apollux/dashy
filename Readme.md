@@ -7,7 +7,7 @@
 
 - Multi monitor aware
 - Group urls to always be visible on the same monitor
-- Configurable refresh interval per URLs
+- Configurable refresh interval per URL
 
 ## Installation
 
@@ -56,3 +56,12 @@ Regardless of the number of available monitors `foo.bar` and `foo.baz` will rota
 ```
 
 This will refresh `foo.bar` every 5 seconds.
+
+## Usage
+
+The ControlWindow (`F12`) allows for pausing of cycling the pages and manually
+stepping to a certain page. This allows for configuration or entering
+credentials on a page.
+
+The dev tools of open pages and the control window can be toggled with
+`Ctrl+F12`

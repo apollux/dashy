@@ -73,6 +73,7 @@ body {
 
 .controls {
   display: flex;
+  margin-top: auto;
 }
 
 .controls > button {
@@ -108,4 +109,8 @@ body {
 
 .controls button:focus {
   outline: none;
+}
+
+.hint {
+  margin-top: auto;
 }
