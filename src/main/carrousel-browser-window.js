@@ -1,6 +1,6 @@
+const R = require("ramda");
 const { BrowserWindow } = require("electron");
 const { CarrouselView, ViewStatus } = require("./carrousel-view");
-const R = require("ramda");
 const { getRendererAppUrl } = require("./get-renderer-app-url");
 
 class CarrouselBrowserWindow {
@@ -34,10 +34,12 @@ class CarrouselBrowserWindow {
   }
 
   _setCarrouselView(view) {
-    const { width, height } = this.browserWindow.getBounds();
-    // A BrowserView is positioned relative to BrowserWindow
-    view.browserView.setBounds({ x: 0, y: 0, width, height });
     this.browserWindow.setBrowserView(view.browserView);
+
+    // A BrowserView is positioned relative to BrowserWindow
+    const { width, height } = this.browserWindow.getBounds();
+    const bounds = { x: 0, y: 0, width, height };
+    view.browserView.setBounds(bounds);
   }
 
   _showStatusView(endpoint) {
