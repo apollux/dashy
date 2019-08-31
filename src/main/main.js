@@ -94,8 +94,8 @@ function createControlsWindow() {
   );
 }
 
-function updateControlState(nextState) {
-  state = nextState;
+function updateState(nextState) {
+  state = { ...state, ...nextState };
   updateControlsWindow();
 }
 
@@ -110,13 +110,13 @@ app.on("ready", () => {
       R.forEach(carrousel => {
         carrousel.stopCycle();
       }, carrousels);
-      updateControlState({ state: "stopped" });
+      updateState({ state: "stopped" });
     },
     play: () => {
       R.forEach(carrousel => {
         carrousel.startCycle();
       }, carrousels);
-      updateControlState({ state: "cycling" });
+      updateState({ state: "cycling" });
     },
     forward: () => R.forEach(carrousel => carrousel.next(), carrousels)
   };
@@ -167,12 +167,18 @@ const template = [
         label: "Toggle Dev Tools",
         accelerator: "Ctrl+F12",
         click() {
-          if (controlWindow.webContents.isDevToolsOpened()) {
-            controlWindow.webContents.closeDevTools();
+          if (state.devToolsOpened) {
+            if (!controlWindow.isDestroyed()) {
+              controlWindow.webContents.closeDevTools();
+            }
             R.forEach(carrousel => carrousel.closeDevTools(), carrousels);
+            updateState({ devToolsOpened: false });
           } else {
-            controlWindow.webContents.openDevTools();
+            if (!controlWindow.isDestroyed()) {
+              controlWindow.webContents.openDevTools();
+            }
             R.forEach(carrousel => carrousel.openDevTools(), carrousels);
+            updateState({ devToolsOpened: true });
           }
         }
       }
