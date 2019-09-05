@@ -18,8 +18,8 @@ Alternatively you can build your own by cloning the repo and running:
 ## Configuration
 
 Configuration is done through a `config.json` file. On Linux this should be
-placed at `~/.config/dashy/config.json` On Windows the this should be placed at
-`%APPDATA%/dashy/config.json`.
+placed at `~/.config/Dashy/config.json` On Windows the this should be placed at
+`%APPDATA%/Dashy/config.json`.
 
 The URLs to load can be configured in a couple of different ways.
 

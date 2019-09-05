@@ -1,6 +1,7 @@
 {
   "name": "dashy",
   "version": "0.1.0",
+  "productName": "Dashy",
   "main": "main.js",
   "license": "GPL-3.0-or-later",
   "scripts": {
