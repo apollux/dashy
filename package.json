@@ -47,9 +47,6 @@
     "appId": "com.electron.dashy",
     "win": {
       "target": "nsis"
-    },
-    "extraFiles": [
-      "src/loading-error.html"
-    ]
+    }
   }
 }
