@@ -21,6 +21,9 @@ Configuration is done through a `config.json` file. On Linux this should be
 placed at `~/.config/Dashy/config.json` On Windows the this should be placed at
 `%APPDATA%/Dashy/config.json`.
 
+The controls window can remain hidden on startup by setting
+`"hideControlsOnStart": true`.
+
 The URLs to load can be configured in a couple of different ways.
 
 ### List of URLs to spread evenly over the available monitors

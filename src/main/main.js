@@ -100,7 +100,9 @@ function updateState(nextState) {
 }
 
 function updateControlsWindow() {
-  controlWindow.webContents.send("main-status", state);
+  if (controlWindow) {
+    controlWindow.webContents.send("main-status", state);
+  }
 }
 
 app.on("ready", () => {
@@ -121,7 +123,10 @@ app.on("ready", () => {
     forward: () => R.forEach(carrousel => carrousel.next(), carrousels)
   };
 
-  createControlsWindow();
+  const hideControlsOnStart = store.get("hideControlsOnStart", false);
+  if (!hideControlsOnStart) {
+    createControlsWindow();
+  }
   global.controls.play();
 
   const watcher = chokidar.watch(store.path, { ignoreInitial: true });
