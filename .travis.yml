@@ -15,18 +15,29 @@ script:
     -v ~/.cache/electron:/root/.cache/electron \
     -v ~/.cache/electron-builder:/root/.cache/electron-builder \
     electronuserland/builder:wine \
-    /bin/bash -c "yarn --link-duplicates --pure-lockfile && yarn dist --linux --win"
+    /bin/bash -c "yarn --ignore-engines --link-duplicates --pure-lockfile && yarn dist --linux --win"
 before_cache:
 - rm -rf $HOME/.cache/electron-builder/wine
 deploy:
-  provider: releases
+- provider: releases
   api_key:
     secure: SLwshwbTd6E1QL1w01q6yDJ0C4zgJ22a7k4+1y+1eWbJskVK3Z1rITWfdtjv/EnFqUiUZqikNm10GhniQw9kCuAAL7ZlyKEUPnn8lmgofj54dGVpVUu/tVu0/9eTpp4QVJzvgtbr1RISZ/6aI3IyFdwvMaHAlZ6hLm8+5R2Lk7qcoYN7lxX1pYtS31rY03BhK4GP8DXvxKpeRBUdxLWdAzL3UdQTSwfr+Hg5rDrwg8Kjap7BibY9lnAzx4MEOUcFN93SrYMta8To2SZl5HZomZs9De5DQ1YT5vojgR/8WPMoMMtfh4pmD/Bk2fvbm2QBIyCh1wLv0xS6pHGfGACT1CVghEHdKPCEEJQq1fpwVXdkuGEGAjlH/qY9IEM751EXUHcphTY0RIj10dH0xhCL+vmUkKVM2Pi1RAzKddGKa6O9OkvXc7ZLSRaQlb6c+iBabB2nB/wSzKX/1SxgEeg6JHIgduXtW0H2zVWhaKevg7Hn0HWq/CmH75WyupGuDJdV6jMaM4KgyaMJj2RLcvo/gtp7EUZwTKkTnHIAuwcbpksd7ElcKVmVHep9NqMBWF1dgryl7MQ8zjNoLKHt30aN7hk3Y1kJCxLk4cInwnK3L0rAiVXZjUcELr3qpbc9P4si1QfxHZDPGXnNAkN/kMQgplesUs27Y2Qnmuauz0I4FRk=
   file_glob: true
   file: 
-    - dist/dashy*.exe
-    - dist/dashy*.AppImage
+    - dist/Dashy*.exe
+    - dist/Dashy*.AppImage
   on:
     repo: apollux/dashy
     tags: true
     branch: master
+- provider: releases
+  api_key:
+    secure: SLwshwbTd6E1QL1w01q6yDJ0C4zgJ22a7k4+1y+1eWbJskVK3Z1rITWfdtjv/EnFqUiUZqikNm10GhniQw9kCuAAL7ZlyKEUPnn8lmgofj54dGVpVUu/tVu0/9eTpp4QVJzvgtbr1RISZ/6aI3IyFdwvMaHAlZ6hLm8+5R2Lk7qcoYN7lxX1pYtS31rY03BhK4GP8DXvxKpeRBUdxLWdAzL3UdQTSwfr+Hg5rDrwg8Kjap7BibY9lnAzx4MEOUcFN93SrYMta8To2SZl5HZomZs9De5DQ1YT5vojgR/8WPMoMMtfh4pmD/Bk2fvbm2QBIyCh1wLv0xS6pHGfGACT1CVghEHdKPCEEJQq1fpwVXdkuGEGAjlH/qY9IEM751EXUHcphTY0RIj10dH0xhCL+vmUkKVM2Pi1RAzKddGKa6O9OkvXc7ZLSRaQlb6c+iBabB2nB/wSzKX/1SxgEeg6JHIgduXtW0H2zVWhaKevg7Hn0HWq/CmH75WyupGuDJdV6jMaM4KgyaMJj2RLcvo/gtp7EUZwTKkTnHIAuwcbpksd7ElcKVmVHep9NqMBWF1dgryl7MQ8zjNoLKHt30aN7hk3Y1kJCxLk4cInwnK3L0rAiVXZjUcELr3qpbc9P4si1QfxHZDPGXnNAkN/kMQgplesUs27Y2Qnmuauz0I4FRk=
+  file_glob: true
+  file:
+    - dist/Dashy*.exe
+    - dist/Dashy*.AppImage
+  draft: true # pre-release
+  on:
+    repo: apollux/dashy
+    branch: develop

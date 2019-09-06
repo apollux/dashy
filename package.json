@@ -1,6 +1,7 @@
 {
   "name": "dashy",
   "version": "0.2.0",
+  "productName": "Dashy",
   "main": "main.js",
   "license": "GPL-3.0-or-later",
   "scripts": {
@@ -13,19 +14,20 @@
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
+    "chokidar": "^3.0.1",
     "ramda": "^0.26.1",
     "source-map-support": "^0.5.12"
   },
   "devDependencies": {
-    "electron": "^5.0.1",
-    "electron-builder": "20.40.2",
-    "electron-store": "^3.2.0",
-    "electron-webpack": "^2.6.2",
-    "eslint": "^5.16.0",
-    "husky": ">=2.3.0",
-    "lint-staged": ">=8.1.7",
-    "prettier": "^1.17.1",
-    "webpack": "4.31.0"
+    "electron": "^6.0.7",
+    "electron-builder": "21.2.0",
+    "electron-store": "^4.0.0",
+    "electron-webpack": "^2.7.2",
+    "eslint": "^6.3.0",
+    "husky": ">=3.0.5",
+    "lint-staged": ">=9.2.5",
+    "prettier": "^1.18.2",
+    "webpack": "4.39.3"
   },
   "husky": {
     "hooks": {

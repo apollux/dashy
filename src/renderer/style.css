@@ -1,0 +1,116 @@
+:root {
+  --bg-border: rgba(0, 0, 0, 0.33);
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: inherit;
+}
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 27px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #0b3954;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 6px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 6px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 26px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 45px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0);
+  }
+}
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(19px, 0);
+  }
+}
+
+.controls {
+  display: flex;
+  margin-top: auto;
+}
+
+.controls > button {
+  border: black;
+  position: relative;
+  margin-left: 1rem;
+  font-size: 3rem;
+}
+
+.controls button {
+  display: block;
+  cursor: pointer;
+  box-shadow: 0.3rem 0.3rem 0.3rem 0px rgba(0, 0, 0, 0.75);
+  border-top: 0.1rem solid transparent;
+  border-left: 0.1rem solid transparent;
+  border-top-left-radius: 10%;
+  border-bottom-right-radius: 10%;
+}
+
+.controls button:hover:enabled {
+  cursor: pointer;
+  border-top: 0.1rem solid var(--bg-border);
+  border-left: 0.1rem solid rgba(0, 0, 0, 0.33);
+}
+
+.controls button:active:enabled {
+  cursor: pointer;
+  box-shadow: 0.05rem 0.05rem 0.05rem 0px rgba(0, 0, 0, 0.75);
+  border-top: 0.05rem solid rgba(0, 0, 0, 0.33);
+  border-left: 0.05rem solid rgba(0, 0, 0, 0.33);
+  top: 0.2rem;
+}
+
+.controls button:focus {
+  outline: none;
+}
+
+.hint {
+  margin-top: auto;
+}

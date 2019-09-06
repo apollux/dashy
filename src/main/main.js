@@ -1,26 +1,26 @@
 const R = require("ramda");
-const { app, Menu } = require("electron");
+const { app, Menu, BrowserWindow } = require("electron");
 const Store = require("electron-store");
+const chokidar = require("chokidar");
 const { CarrouselBrowserWindow } = require("./carrousel-browser-window");
+const { getRendererAppUrl } = require("./get-renderer-app-url");
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
+const store = new Store();
 let carrousels;
+let reInitializing = false;
+let controlWindow;
+let state = null;
 
 function createWindow({ urls, display }) {
-  // Create the browser window.
   const carrousel = new CarrouselBrowserWindow(urls, display);
-  carrousel.startCycle();
+  return carrousel;
+}
 
-  // Emitted when the window is closed.
+function registerCarrousel(carrousel, index) {
   carrousel.browserWindow.on("closed", () => {
-    carrousel.stopCycle();
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    // carrousel = null;
+    carrousel.destroy();
+    carrousels[index] = null;
   });
-
   return carrousel;
 }
 
@@ -36,36 +36,109 @@ const splitIn = R.curry((n, a) => {
   return result;
 });
 
+const splitUrlGroupsIn = R.curry((number, urlGroups) =>
+  R.map(R.flatten, splitIn(number, urlGroups))
+);
+
 function initialize() {
   const { screen } = require("electron");
   const displays = screen.getAllDisplays();
-  const store = new Store();
   const urlGroups = store.get("urls", [
     "https://github.com/apollux/dashy/blob/master/Readme.md"
   ]);
-  const urlGroupsPerDisplay = R.map(
-    R.flatten,
-    splitIn(displays.length, urlGroups)
-  );
+  const urlGroupsPerDisplay = splitUrlGroupsIn(displays.length, urlGroups);
+
   const urlsToDisplay = R.zipWith(
     (urls, display) => ({ urls, display }),
     urlGroupsPerDisplay,
     displays
   );
 
-  carrousels = R.map(createWindow, urlsToDisplay);
+  carrousels = R.addIndex(R.map)(
+    R.useWith(registerCarrousel, [createWindow]),
+    urlsToDisplay
+  );
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on("ready", initialize);
+function reInitialize() {
+  reInitializing = true;
+  R.forEach(carrousel => carrousel.destroy(), carrousels);
+  initialize();
+  reInitializing = false;
+}
+
+function createControlsWindow() {
+  const { screen } = require("electron");
+  const primaryBounds = screen.getPrimaryDisplay().bounds;
+  const height = primaryBounds.height / 5;
+  const width = (primaryBounds.width / 5) * 4;
+  const x = primaryBounds.x + (primaryBounds.width / 2 - width / 2);
+  const y =
+    primaryBounds.y + (primaryBounds.height - height - 50); /* bottom margin */
+
+  controlWindow = new BrowserWindow({
+    height,
+    width,
+    x,
+    y,
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+
+  controlWindow.setMenuBarVisibility(false);
+  controlWindow.loadURL(getRendererAppUrl("controls"));
+  controlWindow.webContents.once("did-finish-load", () =>
+    updateControlsWindow()
+  );
+}
+
+function updateState(nextState) {
+  state = { ...state, ...nextState };
+  updateControlsWindow();
+}
+
+function updateControlsWindow() {
+  if (controlWindow) {
+    controlWindow.webContents.send("main-status", state);
+  }
+}
+
+app.on("ready", () => {
+  initialize();
+  global.controls = {
+    pause: () => {
+      R.forEach(carrousel => {
+        carrousel.stopCycle();
+      }, carrousels);
+      updateState({ state: "stopped" });
+    },
+    play: () => {
+      R.forEach(carrousel => {
+        carrousel.startCycle();
+      }, carrousels);
+      updateState({ state: "cycling" });
+    },
+    forward: () => R.forEach(carrousel => carrousel.next(), carrousels)
+  };
+
+  const hideControlsOnStart = store.get("hideControlsOnStart", false);
+  if (!hideControlsOnStart) {
+    createControlsWindow();
+  }
+  global.controls.play();
+
+  const watcher = chokidar.watch(store.path, { ignoreInitial: true });
+  watcher
+    .on("add", reInitialize)
+    .on("change", reInitialize)
+    .on("unlink", reInitialize);
+});
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin") {
+  if (!reInitializing) {
     app.quit();
   }
 });
@@ -79,24 +152,39 @@ app.on("activate", () => {
 });
 
 const template = [
-  // { role: 'fileMenu' }
   {
     label: "File",
     submenu: [{ role: "quit" }]
   },
-  // { role: 'viewMenu' }
   {
     label: "View",
     submenu: [
-      { role: "reload" },
-      { role: "forcereload" },
-      { role: "toggledevtools" },
-      { role: "togglefullscreen" },
       {
-        label: "Toggle carroussel",
-        accelerator: "Ctrl+c",
+        label: "Open Controls Window",
+        accelerator: "F12",
         click() {
-          setTimeout(() => R.forEach(c => c.toggleCycle(), carrousels), 0);
+          if (!controlWindow || controlWindow.isDestroyed()) {
+            createControlsWindow();
+          }
+        }
+      },
+      {
+        label: "Toggle Dev Tools",
+        accelerator: "Ctrl+F12",
+        click() {
+          if (state.devToolsOpened) {
+            if (!controlWindow.isDestroyed()) {
+              controlWindow.webContents.closeDevTools();
+            }
+            R.forEach(carrousel => carrousel.closeDevTools(), carrousels);
+            updateState({ devToolsOpened: false });
+          } else {
+            if (!controlWindow.isDestroyed()) {
+              controlWindow.webContents.openDevTools();
+            }
+            R.forEach(carrousel => carrousel.openDevTools(), carrousels);
+            updateState({ devToolsOpened: true });
+          }
         }
       }
     ]
