@@ -132,6 +132,7 @@ class CarrouselBrowserWindow {
     this.stopCycle();
     R.forEach(view => view.destroy(), this._views);
     this.browserWindow.destroy();
+    this._statusView.destroy();
   }
 }
 

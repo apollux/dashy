@@ -40,7 +40,7 @@ const splitUrlGroupsIn = R.curry((number, urlGroups) =>
   R.map(R.flatten, splitIn(number, urlGroups))
 );
 
-function initialize() {
+function createCarrousels() {
   const { screen } = require("electron");
   const displays = screen.getAllDisplays();
   const urlGroups = store.get("urls", [
@@ -60,10 +60,36 @@ function initialize() {
   );
 }
 
+function createControls() {
+  // Globals.controls is used by the controls window
+  global.controls = {
+    pause: () => {
+      R.forEach(carrousel => {
+        carrousel.stopCycle();
+      }, carrousels);
+      updateState({ state: "stopped" });
+    },
+    play: () => {
+      R.forEach(carrousel => {
+        carrousel.startCycle();
+      }, carrousels);
+      updateState({ state: "cycling" });
+    },
+    forward: () => R.forEach(carrousel => carrousel.next(), carrousels)
+  };
+}
+
+function initialize() {
+  createCarrousels();
+  createControls();
+  global.controls.play();
+}
+
 function reInitialize() {
   reInitializing = true;
   R.forEach(carrousel => carrousel.destroy(), carrousels);
   initialize();
+  updateControlsWindow();
   reInitializing = false;
 }
 
@@ -100,34 +126,17 @@ function updateState(nextState) {
 }
 
 function updateControlsWindow() {
-  if (controlWindow) {
+  if (controlWindow && !controlWindow.isDestroyed()) {
     controlWindow.webContents.send("main-status", state);
   }
 }
 
 app.on("ready", () => {
   initialize();
-  global.controls = {
-    pause: () => {
-      R.forEach(carrousel => {
-        carrousel.stopCycle();
-      }, carrousels);
-      updateState({ state: "stopped" });
-    },
-    play: () => {
-      R.forEach(carrousel => {
-        carrousel.startCycle();
-      }, carrousels);
-      updateState({ state: "cycling" });
-    },
-    forward: () => R.forEach(carrousel => carrousel.next(), carrousels)
-  };
-
   const hideControlsOnStart = store.get("hideControlsOnStart", false);
   if (!hideControlsOnStart) {
     createControlsWindow();
   }
-  global.controls.play();
 
   const watcher = chokidar.watch(store.path, { ignoreInitial: true });
   watcher
@@ -147,7 +156,7 @@ app.on("activate", () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (R.isEmpty(carrousels)) {
-    initialize();
+    createCarrousels();
   }
 });
 
