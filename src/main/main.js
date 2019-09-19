@@ -196,6 +196,24 @@ const template = [
             updateState({ devToolsOpened: true });
           }
         }
+      },
+      {
+        label: "Toggle cycle",
+        accelerator: "Space",
+        click() {
+          if (state.state === "cycling") {
+            global.controls.pause();
+          } else if (state.state === "stopped") {
+            global.controls.play();
+          }
+        }
+      },
+      {
+        label: "Forward",
+        accelerator: "Right",
+        click() {
+          global.controls.forward();
+        }
       }
     ]
   }
