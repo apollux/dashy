@@ -12,7 +12,8 @@ let controlWindow;
 let state = null;
 
 function createWindow({ urls, display }) {
-  const carrousel = new CarrouselBrowserWindow(urls, display);
+  const cycleTime = store.get("cycleTime", 15000);
+  const carrousel = new CarrouselBrowserWindow(urls, display, cycleTime);
   return carrousel;
 }
 

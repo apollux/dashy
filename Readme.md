@@ -24,6 +24,8 @@ placed at `~/.config/Dashy/config.json` On Windows the this should be placed at
 The controls window can remain hidden on startup by setting
 `"hideControlsOnStart": true`.
 
+The cycle time is controlled by `cycleTime`. This defaults to 15000 which represents 15 seconds.
+
 The URLs to load can be configured in a couple of different ways.
 
 ### List of URLs to spread evenly over the available monitors
