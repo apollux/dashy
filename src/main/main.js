@@ -12,7 +12,8 @@ let controlWindow;
 let state = null;
 
 function createWindow({ urls, display }) {
-  const carrousel = new CarrouselBrowserWindow(urls, display);
+  const cycleTime = store.get("cycleTime", 15000);
+  const carrousel = new CarrouselBrowserWindow(urls, display, cycleTime);
   return carrousel;
 }
 
@@ -194,6 +195,24 @@ const template = [
             R.forEach(carrousel => carrousel.openDevTools(), carrousels);
             updateState({ devToolsOpened: true });
           }
+        }
+      },
+      {
+        label: "Toggle cycle",
+        accelerator: "Space",
+        click() {
+          if (state.state === "cycling") {
+            global.controls.pause();
+          } else if (state.state === "stopped") {
+            global.controls.play();
+          }
+        }
+      },
+      {
+        label: "Forward",
+        accelerator: "Right",
+        click() {
+          global.controls.forward();
         }
       }
     ]

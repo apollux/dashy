@@ -4,7 +4,7 @@ const { CarrouselView, ViewStatus } = require("./carrousel-view");
 const { getRendererAppUrl } = require("./get-renderer-app-url");
 
 class CarrouselBrowserWindow {
-  constructor(urls, display) {
+  constructor(urls, display, cycleTime) {
     this.browserWindow = new BrowserWindow({
       ...display.bounds,
       webPreferences: {
@@ -14,6 +14,7 @@ class CarrouselBrowserWindow {
       fullscreen: true,
       frame: false
     });
+    this.cycleTime = cycleTime;
     this._urls = urls;
     this._cycleHandle = null;
     this._index = 0;
@@ -71,7 +72,7 @@ class CarrouselBrowserWindow {
     this.next();
     this._cycleHandle = setInterval(() => {
       this.next();
-    }, 15000);
+    }, this.cycleTime);
   }
 
   stopCycle() {
