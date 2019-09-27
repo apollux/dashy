@@ -4,6 +4,7 @@ const Store = require("electron-store");
 const chokidar = require("chokidar");
 const { CarrouselBrowserWindow } = require("./carrousel-browser-window");
 const { getRendererAppUrl } = require("./get-renderer-app-url");
+const { distributeUrlGroups } = require("./distribute-url-groups");
 
 const store = new Store();
 let carrousels;
@@ -25,29 +26,13 @@ function registerCarrousel(carrousel, index) {
   return carrousel;
 }
 
-const splitIn = R.curry((n, a) => {
-  const split = R.splitAt(Math.ceil(R.length(a) / n));
-  let remainder = a;
-  const result = [];
-  while (!R.isEmpty(remainder)) {
-    const next = split(remainder);
-    result.push(R.head(next));
-    remainder = R.last(next);
-  }
-  return result;
-});
-
-const splitUrlGroupsIn = R.curry((number, urlGroups) =>
-  R.map(R.flatten, splitIn(number, urlGroups))
-);
-
 function createCarrousels() {
   const { screen } = require("electron");
   const displays = screen.getAllDisplays();
   const urlGroups = store.get("urls", [
     "https://github.com/apollux/dashy/blob/master/Readme.md"
   ]);
-  const urlGroupsPerDisplay = splitUrlGroupsIn(displays.length, urlGroups);
+  const urlGroupsPerDisplay = distributeUrlGroups(displays.length, urlGroups);
 
   const urlsToDisplay = R.zipWith(
     (urls, display) => ({ urls, display }),
